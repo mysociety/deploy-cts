@@ -1,0 +1,77 @@
+version: '3.7'
+
+services:
+
+  db:
+    image: postgres:9.5-alpine
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-replace_me}
+      POSTGRES_USER: correspondence_platform
+      POSTGRES_DB: correspondence_platform_production
+    volumes:
+      - postgresql-data-volume:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+  web:
+    image: ${DOCKER_ORG:-mysocietyorg}/cts_web:${TAG:-latest}
+    environment:
+      CORRESPONDENCE_PLATFORM_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-replace_me}
+      RAILS_SERVE_STATIC_FILES: "true"
+      DOCKER_STATE: ${DOCKER_STATE}
+      RAILS_ENV: production
+      REDIS_URL: redis://redis/
+      UPLOADS_S3_BUCKET: ${UPLOADS_S3_BUCKET:-ms-cts-staging-mysociety-org}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-access_key_needed}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-secret_key_needed}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+    volumes:
+      - ./config/settings/production.yml:/usr/src/app/config/settings/production.yml:ro
+      - ./config/database.yml:/usr/src/app/config/database.yml:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+
+  background_jobs:
+    image: ${DOCKER_ORG:-mysocietyorg}/cts_web:${TAG:-latest}
+    entrypoint: ./run-background-jobs.sh
+    environment:
+      CORRESPONDENCE_PLATFORM_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-replace_me}
+      RAILS_ENV: production
+      REDIS_URL: redis://redis/
+      PUMA_PORT: ""
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+    volumes:
+      - ./config/settings/production.yml:/usr/src/app/config/settings/production.yml:ro
+      - ./config/database.yml:/usr/src/app/config/database.yml:ro
+    depends_on:
+      - db
+      - redis
+
+  uploads:
+    image: ${DOCKER_ORG:-mysocietyorg}/cts_uploads:${TAG:-latest}
+    entrypoint: ./run-uploads.sh
+    environment:
+      CORRESPONDENCE_PLATFORM_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-replace_me}
+      RAILS_ENV: production
+      REDIS_URL: redis://redis/
+      UPLOADS_S3_BUCKET: ${UPLOADS_S3_BUCKET:-ms-cts-staging-mysociety-org}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-access_key_needed}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-secret_key_needed}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+    volumes:
+      - ./config/settings/production.yml:/usr/src/app/config/settings/production.yml:ro
+      - ./config/database.yml:/usr/src/app/config/database.yml:ro
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgresql-data-volume:
+  redis-data:
