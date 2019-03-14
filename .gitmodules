@@ -1,0 +1,3 @@
+[submodule "correspondence_tool_staff"]
+	path = correspondence_tool_staff
+	url = https://github.com/mysociety/correspondence_tool_staff.git
