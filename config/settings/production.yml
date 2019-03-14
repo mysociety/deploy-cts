@@ -1,0 +1,1 @@
+case_uploads_s3_bucket: "<%= ENV['UPLOADS_S3_BUCKET'] %>"
