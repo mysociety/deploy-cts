@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+BUILD_TAG=${BUILD_TAG:-$(git log -1 --pretty=%h)}
+DOCKER_ORG=${DOCKER_ORG:-mysocietyorg}
+
+cd correspondence_tool_staff
+
+echo "==> Building cts_web..."
+docker build -t ${DOCKER_ORG}/cts_web:${BUILD_TAG} .
+docker tag ${DOCKER_ORG}/cts_web:${BUILD_TAG} ${DOCKER_ORG}/cts_web:latest
+
+echo "==> Building cts_uploads..."
+docker build -t ${DOCKER_ORG}/cts_uploads:${BUILD_TAG} --build-arg additional_packages="clamav clamav-daemon clamav-freshclam libreoffice" .
+docker tag ${DOCKER_ORG}/cts_uploads:${BUILD_TAG} ${DOCKER_ORG}/cts_uploads:latest
+
+echo "==> Pushing to Hub..."
+docker push ${DOCKER_ORG}/cts_web:${BUILD_TAG}
+docker push ${DOCKER_ORG}/cts_web:latest
+docker push ${DOCKER_ORG}/cts_uploads:${BUILD_TAG}
+docker push ${DOCKER_ORG}/cts_uploads:latest
+
+cd ..
+
+echo "==> Done - the following images have been built, tagged 'latest' and pushed to the Hub.
+echo "${DOCKER_ORG}/cts_web:${BUILD_TAG}"
+echo "${DOCKER_ORG}/cts_uploads:${BUILD_TAG}"
