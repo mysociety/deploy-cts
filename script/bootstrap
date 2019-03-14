@@ -7,3 +7,15 @@ cd "$(dirname "$0")/.."
 echo "==> Checking git submodules..."
 git submodule update --init
 
+echo "==> Checking for images..."
+docker-compose pull db
+docker-compose pull redis
+for IMAGE in $(docker-compose config 2>/dev/null | grep image | grep cts | awk '{ print $NF}' | sort -u) ; do
+  if docker inspect --type=image $IMAGE >/dev/null 2>&1 ; then
+    echo "==> Local copy found for ${IMAGE}."
+  else
+    docker pull $IMAGE
+  fi
+done
+
+
