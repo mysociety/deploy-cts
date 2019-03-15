@@ -33,7 +33,7 @@ services:
       - ./config/settings/production.yml:/usr/src/app/config/settings/production.yml:ro
       - ./config/database.yml:/usr/src/app/config/database.yml:ro
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
     depends_on:
       - db
       - redis
