@@ -80,7 +80,7 @@ test:
 #
 production:
   <<: *default
-  host: db
-  database: correspondence_platform_production
-  username: correspondence_platform
-  password: <%= ENV['CORRESPONDENCE_PLATFORM_DATABASE_PASSWORD'] %>
+  host: <%= ENV['CTS_DB_HOST'] %>
+  database: <%= ENV['CTS_DB_NAME'] %>
+  username: <%= ENV['CTS_DB_USER'] %>
+  password: <%= ENV['CTS_DB_PASS'] %>

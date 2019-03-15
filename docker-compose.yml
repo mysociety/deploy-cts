@@ -5,9 +5,9 @@ services:
   db:
     image: postgres:9.5-alpine
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-replace_me}
-      POSTGRES_USER: correspondence_platform
-      POSTGRES_DB: correspondence_platform_production
+      POSTGRES_PASSWORD: ${CTS_DB_PASS:-replace_me}
+      POSTGRES_USER: ${CTS_DB_USER:-correspondence_platform}
+      POSTGRES_DB: ${CTS_DB_NAME:-correspondence_platform_production}
     volumes:
       - postgresql-data-volume:/var/lib/postgresql/data
 
@@ -20,7 +20,10 @@ services:
   web:
     image: ${DOCKER_ORG:-mysocietyorg}/cts_web:${TAG:-latest}
     environment:
-      CORRESPONDENCE_PLATFORM_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-replace_me}
+      CTS_DB_PASS: ${CTS_DB_PASS:-replace_me}
+      CTS_DB_NAME: ${CTS_DB_NAME:-correspondence_platform_production}
+      CTS_DB_HOST: ${CTS_DB_HOST:-db}
+      CTS_DB_USER: ${CTS_DB_USER:-correspondence_platform}
       RAILS_SERVE_STATIC_FILES: "true"
       DOCKER_STATE: ${DOCKER_STATE}
       RAILS_ENV: production
@@ -42,7 +45,10 @@ services:
     image: ${DOCKER_ORG:-mysocietyorg}/cts_web:${TAG:-latest}
     entrypoint: ./run-background-jobs.sh
     environment:
-      CORRESPONDENCE_PLATFORM_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-replace_me}
+      CTS_DB_PASS: ${CTS_DB_PASS:-replace_me}
+      CTS_DB_NAME: ${CTS_DB_NAME:-correspondence_platform_production}
+      CTS_DB_HOST: ${CTS_DB_HOST:-db}
+      CTS_DB_USER: ${CTS_DB_USER:-correspondence_platform}
       RAILS_ENV: production
       REDIS_URL: redis://redis/
       PUMA_PORT: ""
@@ -58,7 +64,10 @@ services:
     image: ${DOCKER_ORG:-mysocietyorg}/cts_uploads:${TAG:-latest}
     entrypoint: ./run-uploads.sh
     environment:
-      CORRESPONDENCE_PLATFORM_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-replace_me}
+      CTS_DB_PASS: ${CTS_DB_PASS:-replace_me}
+      CTS_DB_NAME: ${CTS_DB_NAME:-correspondence_platform_production}
+      CTS_DB_HOST: ${CTS_DB_HOST:-db}
+      CTS_DB_USER: ${CTS_DB_USER:-correspondence_platform}
       RAILS_ENV: production
       REDIS_URL: redis://redis/
       UPLOADS_S3_BUCKET: ${UPLOADS_S3_BUCKET:-ms-cts-staging-mysociety-org}
