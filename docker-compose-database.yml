@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+
+  db:
+    image: postgres:9.5-alpine
+    environment:
+      POSTGRES_PASSWORD: ${CTS_DB_PASS:-replace_me}
+      POSTGRES_USER: ${CTS_DB_USER:-correspondence_platform}
+      POSTGRES_DB: ${CTS_DB_NAME:-correspondence_platform_production}
+    volumes:
+      - postgresql-data-volume:/var/lib/postgresql/data
+
+  web:
+    depends_on:
+      - db
+
+  background_jobs:
+    depends_on:
+      - db
+
+  uploads:
+    depends_on:
+      - db
+
+volumes:
+  postgresql-data-volume:
+

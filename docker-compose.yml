@@ -2,15 +2,6 @@ version: '3.7'
 
 services:
 
-  db:
-    image: postgres:9.5-alpine
-    environment:
-      POSTGRES_PASSWORD: ${CTS_DB_PASS:-replace_me}
-      POSTGRES_USER: ${CTS_DB_USER:-correspondence_platform}
-      POSTGRES_DB: ${CTS_DB_NAME:-correspondence_platform_production}
-    volumes:
-      - postgresql-data-volume:/var/lib/postgresql/data
-
   redis:
     image: redis:alpine
     command: ["redis-server", "--appendonly", "yes"]
@@ -38,7 +29,6 @@ services:
     ports:
       - "${PORT:-3000}:3000"
     depends_on:
-      - db
       - redis
 
   background_jobs:
@@ -57,7 +47,6 @@ services:
       - ./config/settings/production.yml:/usr/src/app/config/settings/production.yml:ro
       - ./config/database.yml:/usr/src/app/config/database.yml:ro
     depends_on:
-      - db
       - redis
 
   uploads:
@@ -78,9 +67,7 @@ services:
       - ./config/settings/production.yml:/usr/src/app/config/settings/production.yml:ro
       - ./config/database.yml:/usr/src/app/config/database.yml:ro
     depends_on:
-      - db
       - redis
 
 volumes:
-  postgresql-data-volume:
   redis-data:
