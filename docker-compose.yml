@@ -11,6 +11,7 @@ services:
   web:
     image: ${DOCKER_ORG:-mysocietyorg}/cts_web:${TAG:-latest}
     environment:
+      ENV: ${ENV:-prod}
       CTS_DB_PASS: ${CTS_DB_PASS:-replace_me}
       CTS_DB_NAME: ${CTS_DB_NAME:-correspondence_platform_production}
       CTS_DB_HOST: ${CTS_DB_HOST:-db}
@@ -35,6 +36,7 @@ services:
     image: ${DOCKER_ORG:-mysocietyorg}/cts_web:${TAG:-latest}
     entrypoint: ./run-background-jobs.sh
     environment:
+      ENV: ${ENV:-prod}
       CTS_DB_PASS: ${CTS_DB_PASS:-replace_me}
       CTS_DB_NAME: ${CTS_DB_NAME:-correspondence_platform_production}
       CTS_DB_HOST: ${CTS_DB_HOST:-db}
@@ -53,6 +55,7 @@ services:
     image: ${DOCKER_ORG:-mysocietyorg}/cts_uploads:${TAG:-latest}
     entrypoint: ./run-uploads.sh
     environment:
+      ENV: ${ENV:-prod}
       CTS_DB_PASS: ${CTS_DB_PASS:-replace_me}
       CTS_DB_NAME: ${CTS_DB_NAME:-correspondence_platform_production}
       CTS_DB_HOST: ${CTS_DB_HOST:-db}
