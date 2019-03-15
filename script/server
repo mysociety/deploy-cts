@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e 
+
+cd "$(dirname "$0")/.."
+
+source ../env.swarm
+STACK=$(echo $VHOST | sed -e 's/\./_/g')
+docker stack deploy -c /data/vhost/${VHOST}/deploy-cts/docker-compose.yml -c /data/vhost/${VHOST}/deploy-cts/docker-compose-database.yml ${STACK}
