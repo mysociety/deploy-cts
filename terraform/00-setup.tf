@@ -22,6 +22,11 @@ variable "expire_version_days" {
   default     = 28
 }
 
+variable "base_vhost_url" {
+  description = "Base URL for vhost accessing the resources"
+  default     = "cts.staging.mysociety.org"
+}
+
 provider "aws" {
   region  = "${var.aws_region}"
   version = "~> 2.1"
